@@ -6,11 +6,17 @@ A modern and elegant Home Assistant dashboard to monitor and control your CarCon
 ____________
 
   🔋 Dynamic gauges - Battery and fuel with adaptive colors
+  
   🌡️ Smart climate control - Shows Heating/Cooling/Ventilation based on temperature
+  
   ⚡ Charging management - Control socket and vehicle charging
+  
   🎚️ Amperage selection - Buttons for 5A, 10A, 13A, 16A
+  
   📊 24h history - Battery and fuel graph
+  
   🖼️ Dynamic images - 7 different visual states for your vehicle
+
 
 
 ### 2.  Requirements 📋
@@ -30,6 +36,7 @@ apexcharts-card
 
 
 ### 3. Add images 🖼️
+_______________
 
 Download the 7 images and put them in `/config/www/passat/`:
 
@@ -47,6 +54,7 @@ Download the 7 images and put them in `/config/www/passat/`:
 
 
 ### 4. Import the dashboard and go! 🚀
+_______________
 
 1. Go to **Settings** → **Dashboards**
 2. Create a new dashboard
