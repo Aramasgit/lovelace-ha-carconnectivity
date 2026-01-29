@@ -107,7 +107,28 @@ These entities are **not** included in the MQTT file ( `mqtt_carconnectivity.yam
 > 
 ---
 
-### 7. Credits 
+### 7. Optional: Winter Defrost Automation ❄️
+
+This automation starts the climate at 21°C with window heating for quick defrosting AND restart CarConnectivity container.
+
+**Why restart the container?**  
+CarConnectivity may not immediately reflect state changes in Home Assistant. Restarting the container forces a refresh.
+
+**Setup:**
+
+1. Import `automation_winter_defrost.yaml`
+2. Update the automation with your VIN
+3. Add shell command to `configuration.yaml`:
+```yaml
+shell_command:
+  restart_carconnectivity: "docker restart carconnectivity"
+```
+
+3. Ensure Home Assistant has Docker permissions
+
+---
+   
+### 8. Credits 
 
 - [CarConnectivity](https://github.com/tillsteinbach/CarConnectivity) by tillsteinbach
 - Tested with Volkswagen Passat GTE 2018
