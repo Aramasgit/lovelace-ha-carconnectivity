@@ -98,7 +98,7 @@ mqtt: !include mqtt_carconnectivity.yaml
 1. Go to **Settings** → **Dashboards**
 2. Create a new dashboard
 3. Switch to YAML mode (⋮ → Edit in YAML)
-4. Paste the content of `passat-gte-dashboard.yaml`
+4. Paste the content of `pdashboard.yaml`
 5. Update the entities to match your setup (see below)
 
 ---
