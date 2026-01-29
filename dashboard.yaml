@@ -1,0 +1,709 @@
+title: Passat GTE
+path: passat-gte
+type: sections
+max_columns: 3
+sections:
+  - type: grid
+    column_span: 1
+    cards:
+      - type: heading
+        heading_style: title
+      - type: custom:button-card
+        show_name: false
+        show_state: false
+        show_icon: false
+        styles:
+          card:
+            - background: transparent
+            - border: none
+            - box-shadow: none
+            - padding: 4px 8px
+            - margin-bottom: "-8px"
+          grid:
+            - grid-template-areas: "\"info\""
+            - grid-template-columns: 1fr
+          custom_fields:
+            info:
+              - width: 100%
+        custom_fields:
+          info: |
+            [[[
+              const tempExt = parseFloat(states['sensor.temp_outside_temperature'].state);
+              const consoW = parseFloat(states['sensor.switch_ve_electric_consumption_w'].state);
+              const lastSync = states['sensor.passat_gte_derniere_maj'].state;
+              const tempExtColor = tempExt <= 0 ? '#3b82f6' : (tempExt <= 10 ? '#06b6d4' : (tempExt <= 20 ? '#22c55e' : (tempExt <= 30 ? '#f59e0b' : '#ef4444')));
+              const consoDisplay = consoW > 10 ? `${(consoW/1000).toFixed(1)} kW` : '0 W';
+              const consoColor = consoW > 10 ? '#fbbf24' : '#64748b';
+              
+              return `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: rgba(255,255,255,0.03); border-radius: 12px;">
+                  <div style="display: flex; align-items: center; gap: 4px;">
+                    <ha-icon icon="mdi:thermometer" style="color: ${tempExtColor}; --mdc-icon-size: 14px;"></ha-icon>
+                    <span style="color: ${tempExtColor}; font-size: 12px; font-weight: 500;">${Math.round(tempExt)}°C</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 4px;">
+                    <ha-icon icon="mdi:lightning-bolt" style="color: ${consoColor}; --mdc-icon-size: 14px;"></ha-icon>
+                    <span style="color: ${consoColor}; font-size: 12px; font-weight: 500;">${consoDisplay}</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 4px;">
+                    <ha-icon icon="mdi:sync" style="color: #64748b; --mdc-icon-size: 14px;"></ha-icon>
+                    <span style="color: #64748b; font-size: 11px;">${lastSync}</span>
+                  </div>
+                </div>
+              `;
+            ]]]
+      - type: custom:stack-in-card
+        mode: vertical
+        card_mod:
+          style: |
+            ha-card {
+              background: linear-gradient(145deg, #1a1f2e 0%, #0d1117 100%) !important;
+              border-radius: 24px !important;
+              border: none !important;
+              box-shadow: 0 10px 40px rgba(0,0,0,0.4) !important;
+            }
+            @keyframes pulse {
+              0%, 100% { opacity: 1; transform: scale(1); }
+              50% { opacity: 0.7; transform: scale(1.1); }
+            }
+        cards:
+          - type: custom:button-card
+            entity: sensor.passat_gte_batterie
+            show_name: false
+            show_state: false
+            show_icon: false
+            styles:
+              card:
+                - background: transparent
+                - border: none
+                - padding: 20px
+              grid:
+                - grid-template-areas: "\"vehicle\""
+                - grid-template-columns: 1fr
+                - grid-template-rows: auto
+              custom_fields:
+                vehicle:
+                  - width: 100%
+            custom_fields:
+              vehicle: |
+                [[[
+                  const plugged = states['binary_sensor.passat_gte_branche'].state === 'on';
+                  const charging = states['binary_sensor.passat_gte_en_charge'].state === 'on';
+                  const climate = states['binary_sensor.passat_gte_climatisation_active'].state === 'on';
+                  const battery = parseFloat(states['sensor.passat_gte_batterie'].state);
+                  const tempExt = parseFloat(states['sensor.temp_outside_temperature'].state);
+                  const tempCible = parseFloat(states['sensor.passat_gte_temperature_cible'].state);
+                  const diff = tempCible - tempExt;
+                  
+                  // Déterminer le mode climatisation (pour badge animé)
+                  let climateIcon, climateBg;
+                  if (Math.abs(diff) <= 2) {
+                    climateIcon = 'mdi:fan';
+                    climateBg = 'rgba(168,85,247,0.9)';
+                  } else if (diff > 0) {
+                    climateIcon = 'mdi:fire';
+                    climateBg = 'rgba(249,115,22,0.9)';
+                  } else {
+                    climateIcon = 'mdi:snowflake';
+                    climateBg = 'rgba(6,182,212,0.9)';
+                  }
+                  
+                  let imageSrc, statusIcon, statusText, statusColor, glowColor;
+                  
+                  // Priorité 1: Climatisation/Chauffage actif
+                  if (climate) {
+                    if (Math.abs(diff) <= 2) {
+                      // Ventilation - utilise full ou none selon branchement
+                      imageSrc = plugged ? '/local/passat/full.png' : '/local/passat/none.png';
+                      statusIcon = 'mdi:fan'; statusText = 'Ventilation'; statusColor = '#a855f7'; glowColor = 'rgba(168,85,247,0.4)';
+                    } else if (diff > 0) {
+                      // Chauffage
+                      imageSrc = plugged ? '/local/passat/heat_plugged.png' : '/local/passat/heat_unplugged.png';
+                      statusIcon = 'mdi:fire'; statusText = 'Chauffage'; statusColor = '#f97316'; glowColor = 'rgba(249,115,22,0.4)';
+                    } else {
+                      // Climatisation
+                      imageSrc = plugged ? '/local/passat/clim_plugged.png' : '/local/passat/clim_unplugged.png';
+                      statusIcon = 'mdi:snowflake'; statusText = 'Climatisation'; statusColor = '#06b6d4'; glowColor = 'rgba(6,182,212,0.4)';
+                    }
+                  }
+                  // Priorité 2: En charge
+                  else if (charging) {
+                    imageSrc = '/local/passat/charging.png'; statusIcon = 'mdi:lightning-bolt'; statusText = 'En charge'; statusColor = '#fbbf24'; glowColor = 'rgba(251,191,36,0.4)';
+                  }
+                  // Priorité 3: Branché (full ou en attente)
+                  else if (plugged) {
+                    imageSrc = '/local/passat/full.png'; statusIcon = 'mdi:ev-plug-type2'; statusText = 'Branché'; statusColor = '#22c55e'; glowColor = 'rgba(34,197,94,0.3)';
+                  }
+                  // Priorité 4: Débranché
+                  else {
+                    imageSrc = '/local/passat/none.png'; statusIcon = 'mdi:car'; statusText = 'Prêt'; statusColor = '#64748b'; glowColor = 'rgba(100,116,139,0.2)';
+                  }
+                  
+                  const km = Math.round(parseFloat(states['sensor.passat_gte_kilometrage'].state)).toLocaleString('fr-FR');
+                  const bat = parseFloat(states['sensor.passat_gte_batterie'].state);
+                  const fuel = parseFloat(states['sensor.passat_gte_essence'].state);
+                  const elecRange = states['sensor.passat_gte_autonomie_electrique'].state;
+                  const fuelRange = states['sensor.passat_gte_autonomie_essence'].state;
+                  const total = states['sensor.passat_gte_autonomie_totale'].state;
+                  const batColor = bat > 50 ? '#22c55e' : (bat > 20 ? '#f59e0b' : '#ef4444');
+                  const fuelColor = fuel > 50 ? '#3b82f6' : (fuel > 25 ? '#f59e0b' : '#ef4444');
+                  
+                  return `
+                    <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+                      <!-- Image -->
+                      <div style="position: relative; width: 100%; height: 290px; border-radius: 16px; overflow: hidden; background: black;margin-top:-90px">
+                        <img src="${imageSrc}" style="width: 100%; height: 100%; object-fit: contain; padding: 10px;" onerror="this.style.display='none'"/>
+                        ${charging ? `<div style="position: absolute; bottom: 12px; right: 12px; width: 36px; height: 36px; background: rgba(251,191,36,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: pulse 1.5s ease-in-out infinite;"><ha-icon icon="mdi:lightning-bolt" style="color: #1a1a2e; --mdc-icon-size: 22px;"></ha-icon></div>` : ''}
+                        ${climate ? `<div style="position: absolute; bottom: 12px; right: 12px; width: 36px; height: 36px; background: ${climateBg}; border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: pulse 2s ease-in-out infinite;"><ha-icon icon="${climateIcon}" style="color: white; --mdc-icon-size: 20px;"></ha-icon></div>` : ''}
+                      </div>
+                      
+                      <!-- Nom + Status -->
+                      <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                          <div style="color: white; font-size: 24px; font-weight: 700;">Passat GTE</div>
+                          <div style="color: #64748b; font-size: 14px;">${km} km</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; background: ${statusColor}20; padding: 10px 16px; border-radius: 24px; border: 1px solid ${statusColor}40;">
+                          <ha-icon icon="${statusIcon}" style="color: ${statusColor}; --mdc-icon-size: 20px;"></ha-icon>
+                          <span style="color: ${statusColor}; font-size: 14px; font-weight: 600;">${statusText}</span>
+                        </div>
+                      </div>
+                      
+                      <!-- Jauges -->
+                      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                        <div style="background: linear-gradient(145deg, #252d3d 0%, #1a2030 100%); border-radius: 14px; padding: 16px;">
+                          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                              <ha-icon icon="mdi:battery-charging-high" style="color: ${batColor}; --mdc-icon-size: 22px;"></ha-icon>
+                              <span style="color: #94a3b8; font-size: 13px;">Batterie</span>
+                            </div>
+                            <span style="color: white; font-size: 20px; font-weight: 700;">${Math.round(bat)}%</span>
+                          </div>
+                          <div style="background: rgba(255,255,255,0.1); border-radius: 6px; height: 10px; overflow: hidden;">
+                            <div style="background: linear-gradient(90deg, ${batColor}, ${batColor}cc); width: ${bat}%; height: 100%; border-radius: 6px; box-shadow: 0 0 12px ${batColor}60;"></div>
+                          </div>
+                          <div style="color: #64748b; font-size: 12px; margin-top: 8px;"><ha-icon icon="mdi:road-variant" style="--mdc-icon-size: 12px;"></ha-icon> ${elecRange} km</div>
+                        </div>
+                        <div style="background: linear-gradient(145deg, #252d3d 0%, #1a2030 100%); border-radius: 14px; padding: 16px;">
+                          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                              <ha-icon icon="mdi:gas-station" style="color: ${fuelColor}; --mdc-icon-size: 22px;"></ha-icon>
+                              <span style="color: #94a3b8; font-size: 13px;">Essence</span>
+                            </div>
+                            <span style="color: white; font-size: 20px; font-weight: 700;">${Math.round(fuel)}%</span>
+                          </div>
+                          <div style="background: rgba(255,255,255,0.1); border-radius: 6px; height: 10px; overflow: hidden;">
+                            <div style="background: linear-gradient(90deg, ${fuelColor}, ${fuelColor}cc); width: ${fuel}%; height: 100%; border-radius: 6px; box-shadow: 0 0 12px ${fuelColor}60;"></div>
+                          </div>
+                          <div style="color: #64748b; font-size: 12px; margin-top: 8px;"><ha-icon icon="mdi:road-variant" style="--mdc-icon-size: 12px;"></ha-icon> ${fuelRange} km</div>
+                        </div>
+                      </div>
+                      
+                      <!-- Autonomie totale -->
+                      <div style="background: linear-gradient(135deg, rgba(59,130,246,0.2) 0%, rgba(139,92,246,0.15) 100%); border: 1px solid rgba(59,130,246,0.3); border-radius: 14px; padding: 18px; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                          <ha-icon icon="mdi:map-marker-distance" style="color: #3b82f6; --mdc-icon-size: 26px;"></ha-icon>
+                          <span style="color: #94a3b8; font-size: 15px;">Autonomie totale</span>
+                        </div>
+                        <div>
+                          <span style="color: white; font-size: 32px; font-weight: 700;">${total}</span>
+                          <span style="color: #64748b; font-size: 16px;"> km</span>
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                ]]]
+  - type: grid
+    column_span: 1
+    cards:
+      - type: heading
+        heading_style: title
+      - type: custom:stack-in-card
+        mode: vertical
+        card_mod:
+          style: |
+            ha-card {
+              background: linear-gradient(145deg, #1a1f2e 0%, #0d1117 100%) !important;
+              border-radius: 24px !important;
+              border: none !important;
+              padding-right:30px;
+              box-shadow: 0 10px 40px rgba(0,0,0,0.4) !important;
+            }
+        cards:
+          - type: custom:button-card
+            entity: binary_sensor.passat_gte_climatisation_active
+            show_name: false
+            show_state: false
+            show_icon: false
+            tap_action:
+              action: call-service
+              service: automation.trigger
+              target:
+                entity_id: automation.passat_degivrage_hiver
+            styles:
+              card:
+                - background: |
+                    [[[
+                      const isOn = entity.state === 'on';
+                      const tempExt = parseFloat(states['sensor.temp_outside_temperature'].state);
+                      const tempCible = parseFloat(states['sensor.passat_gte_temperature_cible'].state);
+                      const diff = tempCible - tempExt;
+                      
+                      if (!isOn) return 'linear-gradient(145deg, #252d3d 0%, #1a2030 100%)';
+                      
+                      if (Math.abs(diff) <= 2) {
+                        return 'linear-gradient(145deg, rgba(168,85,247,0.3) 0%, rgba(168,85,247,0.1) 100%)';
+                      } else if (diff > 0) {
+                        return 'linear-gradient(145deg, rgba(249,115,22,0.3) 0%, rgba(249,115,22,0.1) 100%)';
+                      } else {
+                        return 'linear-gradient(145deg, rgba(6,182,212,0.3) 0%, rgba(6,182,212,0.1) 100%)';
+                      }
+                    ]]]
+                - border-radius: 16px
+                - padding: 20px
+                - margin: 16px
+                - border: |
+                    [[[
+                      const isOn = entity.state === 'on';
+                      const tempExt = parseFloat(states['sensor.temp_outside_temperature'].state);
+                      const tempCible = parseFloat(states['sensor.passat_gte_temperature_cible'].state);
+                      const diff = tempCible - tempExt;
+                      
+                      if (!isOn) return '1px solid rgba(255,255,255,0.05)';
+                      
+                      if (Math.abs(diff) <= 2) {
+                        return '1px solid rgba(168,85,247,0.5)';
+                      } else if (diff > 0) {
+                        return '1px solid rgba(249,115,22,0.5)';
+                      } else {
+                        return '1px solid rgba(6,182,212,0.5)';
+                      }
+                    ]]]
+              grid:
+                - grid-template-areas: "\"content\""
+                - grid-template-columns: 1fr
+              custom_fields:
+                content:
+                  - width: 100%
+            custom_fields:
+              content: |
+                [[[
+                  const isOn = entity.state === 'on';
+                  const tempExt = parseFloat(states['sensor.temp_outside_temperature'].state);
+                  const tempCible = parseFloat(states['sensor.passat_gte_temperature_cible'].state);
+                  const diff = tempCible - tempExt;
+                  
+                  let icon, label, color;
+                  
+                  if (Math.abs(diff) <= 2) {
+                    icon = 'mdi:fan';
+                    label = 'Ventilation';
+                    color = isOn ? '#a855f7' : '#475569';
+                  } else if (diff > 0) {
+                    icon = 'mdi:fire';
+                    label = 'Chauffage';
+                    color = isOn ? '#f97316' : '#475569';
+                  } else {
+                    icon = 'mdi:snowflake';
+                    label = 'Climatisation';
+                    color = isOn ? '#06b6d4' : '#475569';
+                  }
+                  
+                  const statusText = isOn ? 'Actif' : 'Inactif';
+                  const tempInfo = `Ext ${Math.round(tempExt)}° → Cible ${Math.round(tempCible)}°`;
+                  
+                  return `
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                      <ha-icon icon="${icon}" style="color: ${color}; --mdc-icon-size: 32px;"></ha-icon>
+                      <div style="flex: 1;">
+                        <div style="color: ${isOn ? 'white' : '#64748b'}; font-size: 14px; font-weight: 600;">${label}</div>
+                        <div style="color: #475569; font-size: 11px;">${tempInfo} • ${statusText}</div>
+                      </div>
+                      <div style="width: 48px; height: 26px; background: ${isOn ? color : '#334155'}; border-radius: 13px; position: relative;">
+                        <div style="width: 22px; height: 22px; background: white; border-radius: 50%; position: absolute; top: 2px; left: ${isOn ? '24px' : '2px'};"></div>
+                      </div>
+                    </div>
+                  `;
+                ]]]
+          - type: custom:button-card
+            show_name: false
+            show_state: false
+            show_icon: false
+            tap_action:
+              action: more-info
+              entity: number.passat_gte_reglage_temperature
+            styles:
+              card:
+                - background: "linear-gradient(145deg, #252d3d 0%, #1a2030 100%)"
+                - border-radius: 16px
+                - padding: 16px 20px
+                - margin: 0 16px
+                - border: 1px solid rgba(255,255,255,0.05)
+              grid:
+                - grid-template-areas: "\"content\""
+                - grid-template-columns: 1fr
+              custom_fields:
+                content:
+                  - width: 100%
+            custom_fields:
+              content: |
+                [[[
+                  const tempCible = parseFloat(states['sensor.passat_gte_temperature_cible'].state);
+                  const tempExt = parseFloat(states['sensor.temp_outside_temperature'].state);
+                  const tempCibleColor = tempCible > 22 ? '#ef4444' : (tempCible < 18 ? '#3b82f6' : '#22c55e');
+                  const tempExtColor = tempExt <= 0 ? '#3b82f6' : (tempExt <= 10 ? '#06b6d4' : (tempExt <= 20 ? '#22c55e' : (tempExt <= 30 ? '#f59e0b' : '#ef4444')));
+                  
+                  return `
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                      <div style="display: flex; align-items: center; gap: 10px;">
+                        <ha-icon icon="mdi:thermometer-lines" style="color: ${tempExtColor}; --mdc-icon-size: 22px;"></ha-icon>
+                        <div>
+                          <div style="color: #64748b; font-size: 10px; text-transform: uppercase;">Extérieur</div>
+                          <div style="color: white; font-size: 20px; font-weight: 700;">${Math.round(tempExt)}°C</div>
+                        </div>
+                      </div>
+                      <div style="width: 1px; height: 36px; background: rgba(255,255,255,0.15);"></div>
+                      <div style="display: flex; align-items: center; gap: 10px;">
+                        <ha-icon icon="mdi:thermometer" style="color: ${tempCibleColor}; --mdc-icon-size: 22px;"></ha-icon>
+                        <div>
+                          <div style="color: #64748b; font-size: 10px; text-transform: uppercase;">Cible</div>
+                          <div style="color: white; font-size: 20px; font-weight: 700;">${tempCible}°C</div>
+                        </div>
+                      </div>
+                      <div style="width: 1px; height: 36px; background: rgba(255,255,255,0.15);"></div>
+                      <div style="display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); border-radius: 12px;">
+                        <ha-icon icon="mdi:pencil" style="color: #3b82f6; --mdc-icon-size: 20px;"></ha-icon>
+                      </div>
+                    </div>
+                  `;
+                ]]]
+          - type: grid
+            columns: 2
+            square: false
+            card_mod:
+              style: |
+                ha-card {
+                  background: transparent !important;
+                  box-shadow: none !important;
+                  padding: 0 16px 16px 16px !important;
+                }
+            cards:
+              - type: custom:button-card
+                entity: switch.switch_ve
+                show_name: false
+                show_state: false
+                show_icon: false
+                tap_action:
+                  action: toggle
+                styles:
+                  card:
+                    - background: |
+                        [[[
+                          return entity.state === 'on' ? 'rgba(251,191,36,0.15)' : 'rgba(255,255,255,0.03)';
+                        ]]]
+                    - border-radius: 12px
+                    - padding: 14px
+                    - margin-left: 15px
+                    - margin-top: 15px
+                    - margin-bottom: 15px
+                    - border: |
+                        [[[
+                          return entity.state === 'on' ? '1px solid rgba(251,191,36,0.3)' : '1px solid rgba(255,255,255,0.05)';
+                        ]]]
+                  grid:
+                    - grid-template-areas: "\"c\""
+                    - grid-template-columns: 1fr
+                  custom_fields:
+                    c:
+                      - width: 100%
+                custom_fields:
+                  c: |
+                    [[[
+                      const on = entity.state === 'on';
+                      return `
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <ha-icon icon="mdi:power-socket-fr" style="color: ${on ? '#fbbf24' : '#64748b'}; --mdc-icon-size: 20px;"></ha-icon>
+                          <div style="flex: 1;">
+                            <div style="color: ${on ? 'white' : '#64748b'}; font-size: 11px; font-weight: 600;">Prise</div>
+                            <div style="color: #475569; font-size: 9px;">${on ? 'Active' : 'Coupée'}</div>
+                          </div>
+                          <div style="width: 32px; height: 18px; background: ${on ? '#fbbf24' : '#334155'}; border-radius: 9px; position: relative;">
+                            <div style="width: 14px; height: 14px; background: white; border-radius: 50%; position: absolute; top: 2px; left: ${on ? '16px' : '2px'};"></div>
+                          </div>
+                        </div>
+                      `;
+                    ]]]
+              - type: custom:button-card
+                entity: switch.passat_gte_charge
+                show_name: false
+                show_state: false
+                show_icon: false
+                tap_action:
+                  action: toggle
+                styles:
+                  card:
+                    - background: |
+                        [[[
+                          return entity.state === 'on' ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.03)';
+                        ]]]
+                    - border-radius: 12px
+                    - padding: 14px
+                    - margin-left: 15px
+                    - margin-bottom: 15px
+                    - margin-top: 15px
+                    - border: |
+                        [[[
+                          return entity.state === 'on' ? '1px solid rgba(34,197,94,0.3)' : '1px solid rgba(255,255,255,0.05)';
+                        ]]]
+                  grid:
+                    - grid-template-areas: "\"c\""
+                    - grid-template-columns: 1fr
+                  custom_fields:
+                    c:
+                      - width: 100%
+                custom_fields:
+                  c: |
+                    [[[
+                      const on = entity.state === 'on';
+                      return `
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <ha-icon icon="${on ? 'mdi:battery-charging' : 'mdi:battery-off-outline'}" style="color: ${on ? '#22c55e' : '#64748b'}; --mdc-icon-size: 20px;"></ha-icon>
+                          <div style="flex: 1;">
+                            <div style="color: ${on ? 'white' : '#64748b'}; font-size: 11px; font-weight: 600;">Voiture</div>
+                            <div style="color: #475569; font-size: 9px;">${on ? 'Charge' : 'Stop'}</div>
+                          </div>
+                          <div style="width: 32px; height: 18px; background: ${on ? '#22c55e' : '#334155'}; border-radius: 9px; position: relative;">
+                            <div style="width: 14px; height: 14px; background: white; border-radius: 50%; position: absolute; top: 2px; left: ${on ? '16px' : '2px'};"></div>
+                          </div>
+                        </div>
+                      `;
+                    ]]]
+          - type: custom:button-card
+            show_name: false
+            show_state: false
+            show_icon: false
+            styles:
+              card:
+                - background: transparent
+                - box-shadow: none
+                - padding: 8px 16px 0 16px
+                - border: 0px;
+              custom_fields:
+                label:
+                  - color: "#64748b"
+                  - font-size: 11px
+                  - text-transform: uppercase
+                  - letter-spacing: 1px
+            custom_fields:
+              label: Ampérage voiture
+          - type: horizontal-stack
+            cards:
+              - type: custom:button-card
+                entity: sensor.passat_gte_courant_max
+                name: 5A
+                show_icon: false
+                tap_action:
+                  action: call-service
+                  service: number.set_value
+                  target:
+                    entity_id: number.passat_gte_reglage_courant_max
+                  data:
+                    value: 6
+                styles:
+                  card:
+                    - background: |
+                        [[[
+                          return Math.round(parseFloat(entity.state)) === 5 ? 'rgba(59,130,246,0.7)' : 'rgba(255,255,255,0.03)';
+                        ]]]
+                    - border-radius: 14px
+                    - padding: 12px 8px
+                    - margin-left: 16px
+                    - border: |
+                        [[[
+                          return Math.round(parseFloat(entity.state)) === 5 ? '1px solid rgba(59,130,246,0.9);border-radius: 20px!important;' : '1px solid rgba(255,255,255,0.05);border-radius: 20px!important;';
+                        ]]]
+                  name:
+                    - color: |
+                        [[[
+                          return Math.round(parseFloat(entity.state)) === 5 ? '#3b82f6' : '#64748b';
+                        ]]]
+                    - font-size: 13px
+                    - font-weight: 600
+                    - border-radius: 20px!important;
+              - type: custom:button-card
+                entity: sensor.passat_gte_courant_max
+                name: 10A
+                show_icon: false
+                tap_action:
+                  action: call-service
+                  service: number.set_value
+                  target:
+                    entity_id: number.passat_gte_reglage_courant_max
+                  data:
+                    value: 10
+                styles:
+                  card:
+                    - background: |
+                        [[[
+                          return Math.round(parseFloat(entity.state)) === 10 ? 'rgba(59,130,246,0.7)' : 'rgba(255,255,255,0.03)';
+                        ]]]
+                    - border-radius: 14px
+                    - padding: 12px 8px
+                    - margin-left: 16px
+                    - border: |
+                        [[[
+                          return Math.round(parseFloat(entity.state)) === 10 ? '1px solid rgba(59,130,246,0.9);border-radius: 20px!important;' : '1px solid rgba(255,255,255,0.05);border-radius: 20px!important;';
+                        ]]]
+                  name:
+                    - color: |
+                        [[[
+                          return Math.round(parseFloat(entity.state)) === 10 ? '#3b82f6' : '#64748b';
+                        ]]]
+                    - font-size: 13px
+                    - border-radius: 20px!important
+                    - font-weight: 600
+              - type: custom:button-card
+                entity: sensor.passat_gte_courant_max
+                name: 13A
+                show_icon: false
+                tap_action:
+                  action: call-service
+                  service: number.set_value
+                  target:
+                    entity_id: number.passat_gte_reglage_courant_max
+                  data:
+                    value: 13
+                styles:
+                  card:
+                    - background: |
+                        [[[
+                          return Math.round(parseFloat(entity.state)) === 13 ? 'rgba(59,130,246,0.7)' : 'rgba(255,255,255,0.03)';
+                        ]]]
+                    - border-radius: 14px
+                    - padding: 12px 8px
+                    - margin-left: 16px
+                    - border: |
+                        [[[
+                          return Math.round(parseFloat(entity.state)) === 13 ? '1px solid rgba(59,130,246,0.9)' : '1px solid rgba(255,255,255,0.05)';
+                        ]]]
+                  name:
+                    - color: |
+                        [[[
+                          return Math.round(parseFloat(entity.state)) === 13 ? '#3b82f6' : '#64748b';
+                        ]]]
+                    - font-size: 13px
+                    - font-weight: 600
+              - type: custom:button-card
+                entity: sensor.passat_gte_courant_max
+                name: 16A
+                show_icon: false
+                tap_action:
+                  action: call-service
+                  service: number.set_value
+                  target:
+                    entity_id: number.passat_gte_reglage_courant_max
+                  data:
+                    value: 16
+                styles:
+                  card:
+                    - background: |
+                        [[[
+                          return Math.round(parseFloat(entity.state)) === 16 ? 'rgba(59,130,246,0.7)' : 'rgba(255,255,255,0.03)';
+                        ]]]
+                    - border-radius: 14px
+                    - padding: 12px 8px
+                    - margin-right: 16px
+                    - margin-bottom: 16px
+                    - margin-left: 16px
+                    - border: |
+                        [[[
+                          return Math.round(parseFloat(entity.state)) === 16 ? '1px solid rgba(59,130,246,0.9)' : '1px solid rgba(255,255,255,0.05)';
+                        ]]]
+                  name:
+                    - color: |
+                        [[[
+                          return Math.round(parseFloat(entity.state)) === 16 ? '#3b82f6' : '#64748b';
+                        ]]]
+                    - font-size: 13px
+                    - font-weight: 600
+  - type: grid
+    column_span: 1
+    cards:
+      - type: heading
+        heading_style: title
+      - type: custom:stack-in-card
+        mode: vertical
+        card_mod:
+          style: |
+            ha-card {
+              background: linear-gradient(145deg, #1a1f2e 0%, #0d1117 100%) !important;
+              border-radius: 24px !important;
+              border: none !important;
+              box-shadow: 0 10px 40px rgba(0,0,0,0.4) !important;
+            }
+        cards:
+          - type: custom:apexcharts-card
+            graph_span: 24h
+            header:
+              show: true
+              title: Dernières 24h
+              show_states: false
+            card_mod:
+              style: |
+                ha-card {
+                  background: transparent !important;
+                  border: none !important;
+                  box-shadow: none !important;
+                }
+                .apexcharts-title-text {
+                  fill: #94a3b8 !important;
+                  font-size: 14px !important;
+                  font-weight: 600 !important;
+                }
+            apex_config:
+              chart:
+                height: 180
+                background: transparent
+                toolbar:
+                  show: false
+              grid:
+                borderColor: rgba(255,255,255,0.05)
+              legend:
+                show: true
+                position: top
+                horizontalAlign: right
+                labels:
+                  colors: "#64748b"
+                fontSize: 12px
+              tooltip:
+                theme: dark
+              xaxis:
+                labels:
+                  style:
+                    colors: "#64748b"
+                    fontSize: 11px
+            series:
+              - entity: sensor.passat_gte_batterie
+                name: Batterie
+                color: "#22c55e"
+                stroke_width: 2
+              - entity: sensor.passat_gte_essence
+                name: Essence
+                color: "#3b82f6"
+                stroke_width: 2
+          - type: custom:button-card
+            entity: sensor.passat_gte_derniere_maj
+            show_name: false
+            show_icon: false
+            show_state: false
+            styles:
+              card:
+                - background: transparent
+                - box-shadow: none
+                - padding: 12px 16px
+            custom_fields:
+              time: |
+                [[[
+                  return `<div style="color: #475569; font-size: 11px; text-align: center;"><ha-icon icon="mdi:update" style="--mdc-icon-size: 14px;"></ha-icon> Mis à jour : ${entity.state}</div>`;
+                ]]]
+cards: []
