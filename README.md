@@ -6,9 +6,9 @@ A modern and elegant Home Assistant dashboard to monitor and control your CarCon
 
 > 🇫🇷 **Note**: I'm French, so you'll find some French references in the code (comments, entity names, labels). Feel free to adapt them to your language!
 
-> 🚙 **Compatibility**: Tested on my **Volkswagen Passat GTE 2018**, but this dashboard works with **any vehicle supported by CarConnectivity** (VW, Audi, Skoda, Seat, Cupra...). Just adapt the entity names to match your setup.
+> **Compatibility**: Tested on my **Passat GTE 2018**, but this dashboard works with **any vehicle supported by CarConnectivity** (VW, Audi, Skoda, Seat, Cupra...).
 
-> 🎨 **Pro tip**: Customize the car images to match your vehicle! I used **Nano Banana Pro by Gemini 3** to generate mine. Use my images as a base and ask an AI to adapt them to your car model.
+> **Pro tip**: Customize the car images to match your vehicle! I used **Nano Banana Pro by Gemini 3** to generate mine. Use my images as a base and ask an AI to adapt them to your car model.
 
 
 ## Preview 📸
