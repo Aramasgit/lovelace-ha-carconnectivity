@@ -66,10 +66,48 @@ Download the 7 images and put them in `/config/www/passat/`:
 2. Create a new dashboard
 3. Switch to YAML mode (⋮ → Edit in YAML)
 4. Paste the content of `passat-gte-dashboard.yaml`
+5. Update the entities to match your setup (see below)
 
 ---
 
-### 5. Credits 
+### 5. Entity Configuration 🔧
+
+You need to adapt the entity IDs to match your setup. Here's the complete list:
+
+#### CarConnectivity Entities (required)
+
+These entities are created by CarConnectivity-MQTT. Rename them in the YAML to match your vehicle:
+
+| Entity | Description |
+|--------|-------------|
+| `sensor.passat_gte_batterie` | Battery level (%) |
+| `sensor.passat_gte_essence` | Fuel level (%) |
+| `sensor.passat_gte_kilometrage` | Odometer (km) |
+| `sensor.passat_gte_autonomie_electrique` | Electric range (km) |
+| `sensor.passat_gte_autonomie_essence` | Fuel range (km) |
+| `sensor.passat_gte_autonomie_totale` | Total range (km) |
+| `sensor.passat_gte_temperature_cible` | Target climate temperature |
+| `sensor.passat_gte_courant_max` | Current max charging amps |
+| `sensor.passat_gte_derniere_maj` | Last sync time |
+| `binary_sensor.passat_gte_branche` | Plugged in status |
+| `binary_sensor.passat_gte_en_charge` | Charging status |
+| `binary_sensor.passat_gte_climatisation_active` | Climate active |
+| `switch.passat_gte_charge` | Start/stop charging |
+| `number.passat_gte_reglage_courant_max` | Set max charging amps |
+| `number.passat_gte_reglage_temperature` | Set target temperature |
+
+#### Optional Entities
+
+| Entity | Description | Source |
+|--------|-------------|--------|
+| `switch.switch_ve` | Smart plug for charger | Tuya, Shelly, etc. |
+| `sensor.switch_ve_electric_consumption_w` | Power consumption (W) | Smart plug |
+| `sensor.temp_outside_temperature` | Outside temperature | Weather integration |
+| `automation.passat_degivrage_hiver` | Winter defrost automation | Your automation |
+
+---
+
+### 6. Credits 
 
 - [CarConnectivity](https://github.com/tillsteinbach/CarConnectivity) by tillsteinbach
 - Tested with Volkswagen Passat GTE 2018
