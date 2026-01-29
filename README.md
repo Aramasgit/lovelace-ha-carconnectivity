@@ -14,6 +14,8 @@ A modern and elegant Home Assistant dashboard to monitor and control your CarCon
 
 ### 1. Features ✨
 
+🖼️ Dynamic images - 7 different visual states for your vehicle
+
 🔋 Dynamic gauges - Battery and fuel with adaptive colors
 
 🌡️ Smart climate control - Shows Heating/Cooling/Ventilation based on temperature
@@ -23,8 +25,6 @@ A modern and elegant Home Assistant dashboard to monitor and control your CarCon
 🎚️ Amperage selection - Buttons for 5A, 10A, 13A, 16A
 
 📊 24h history - Battery and fuel graph
-
-🖼️ Dynamic images - 7 different visual states for your vehicle
 
 ---
 
@@ -124,7 +124,7 @@ shell_command:
   restart_carconnectivity: "docker restart carconnectivity"
 ```
 
-3. Ensure Home Assistant has Docker permissions
+4. Ensure Home Assistant has Docker permissions
 
 ---
    
