@@ -1,0 +1,33 @@
+alias: Passat - Dégivrage Hiver
+description: ""
+triggers: []
+conditions: []
+actions:
+  - action: mqtt.publish
+    metadata: {}
+    data:
+      evaluate_payload: false
+      qos: 0
+      retain: false
+      topic: >-
+        carconnectivity/garage/VIN_OF_YOUR_CAR/climatization/commands/start-stop_writetopic
+      payload: start --target-temperature 21
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 2
+      milliseconds: 0
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.passat_gte_chauffage_vitres
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 30
+      milliseconds: 0
+  - action: shell_command.restart_carconnectivity
+    metadata: {}
+    data: {}
+mode: single
