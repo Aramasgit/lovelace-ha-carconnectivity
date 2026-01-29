@@ -42,7 +42,7 @@ A modern and elegant Home Assistant dashboard to monitor and control your CarCon
 ### 2. Requirements 📋
 
 **Docker** to run:
-- [CarConnectivity-MQTT](https://github.com/tillsteinbach/CarConnectivity)
+- [CarConnectivity-MQTT](https://github.com/tillsteinbach/CarConnectivity) : https://hub.docker.com/r/tillsteinbach/carconnectivity-mqtt
 - MQTT Broker (I use Mosquitto)
 
 **HACS** integrations ([hacs.xyz](https://www.hacs.xyz/)):
