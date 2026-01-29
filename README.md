@@ -6,9 +6,12 @@ A modern and elegant Home Assistant dashboard to monitor and control your CarCon
 ## Preview 📸
 
 <p align="center">
-  <img width="1087" height="618" alt="heating" src="https://github.com/user-attachments/assets/7d59a18c-4c06-4ae3-8e6e-f0ab93aa2b4e" />
+  <img width="2021" height="756" alt="charging" src="https://github.com/user-attachments/assets/674e676c-76f9-47d1-87ba-d6330a398f58" />
 </p>
 
+<p align="center">
+  <img width="1087" height="618" alt="heating" src="https://github.com/user-attachments/assets/7d59a18c-4c06-4ae3-8e6e-f0ab93aa2b4e" />
+</p>
 
 ---
 
