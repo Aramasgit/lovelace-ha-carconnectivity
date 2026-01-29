@@ -1,0 +1,397 @@
+# =============================================================================
+# Configuration MQTT pour Volkswagen Passat GTE
+# À inclure dans configuration.yaml avec: mqtt: !include mqtt_carconnectivity.yaml
+# =============================================================================
+
+sensor:
+  # ============================================================================
+  # ÉNERGIE - Batterie électrique
+  # ============================================================================
+  - name: "Passat GTE Batterie"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/drives/secondary/level"
+    unit_of_measurement: "%"
+    device_class: battery
+    state_class: measurement
+    unique_id: passat_gte_battery_level
+    icon: mdi:car-electric
+
+  - name: "Passat GTE Autonomie Électrique"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/drives/secondary/range"
+    unit_of_measurement: "km"
+    state_class: measurement
+    unique_id: passat_gte_electric_range
+    icon: mdi:ev-station
+
+  # ============================================================================
+  # ÉNERGIE - Carburant
+  # ============================================================================
+  - name: "Passat GTE Essence"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/drives/primary/level"
+    unit_of_measurement: "%"
+    state_class: measurement
+    unique_id: passat_gte_fuel_level
+    icon: mdi:gas-station
+
+  - name: "Passat GTE Autonomie Essence"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/drives/primary/range"
+    unit_of_measurement: "km"
+    state_class: measurement
+    unique_id: passat_gte_fuel_range
+    icon: mdi:gas-station-outline
+
+  # ============================================================================
+  # ÉNERGIE - Totaux
+  # ============================================================================
+  - name: "Passat GTE Autonomie Totale"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/drives/total_range"
+    unit_of_measurement: "km"
+    state_class: measurement
+    unique_id: passat_gte_total_range
+    icon: mdi:map-marker-distance
+
+  # ============================================================================
+  # VÉHICULE - Infos générales
+  # ============================================================================
+  - name: "Passat GTE Kilométrage"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/odometer"
+    unit_of_measurement: "km"
+    state_class: total_increasing
+    unique_id: passat_gte_odometer
+    icon: mdi:counter
+
+  - name: "Passat GTE État"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/state"
+    unique_id: passat_gte_state
+    icon: mdi:car
+
+  - name: "Passat GTE Type"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/type"
+    unique_id: passat_gte_type
+    icon: mdi:car-info
+
+  - name: "Passat GTE Nom"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/name"
+    unique_id: passat_gte_name
+    icon: mdi:car-info
+
+  - name: "Passat GTE Modèle"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/model"
+    unique_id: passat_gte_model
+    icon: mdi:car-side
+
+  # ============================================================================
+  # CHARGE
+  # ============================================================================
+  - name: "Passat GTE État Charge"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/charging/state"
+    unique_id: passat_gte_charging_state
+    icon: mdi:ev-plug-type2
+
+  - name: "Passat GTE Type Charge"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/charging/type"
+    unique_id: passat_gte_charging_type
+    icon: mdi:ev-plug-type2
+
+  - name: "Passat GTE Fin Charge Estimée"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/charging/estimated_date_reached"
+    unique_id: passat_gte_charging_end
+    icon: mdi:clock-end
+
+  - name: "Passat GTE Courant Max"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/charging/settings/maximum_current"
+    unit_of_measurement: "A"
+    unique_id: passat_gte_charging_max_current
+    icon: mdi:current-ac
+
+  - name: "Passat GTE Connecteur État"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/charging/connector/connection_state"
+    unique_id: passat_gte_connector_state
+    icon: mdi:ev-plug-type2
+
+  - name: "Passat GTE Connecteur Verrou"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/charging/connector/lock_state"
+    unique_id: passat_gte_connector_lock
+    icon: mdi:lock
+
+  - name: "Passat GTE Alimentation Externe"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/charging/connector/external_power"
+    unique_id: passat_gte_external_power
+    icon: mdi:power-plug
+
+  # ============================================================================
+  # CLIMATISATION
+  # ============================================================================
+  - name: "Passat GTE Climatisation État"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/climatization/state"
+    unique_id: passat_gte_climate_state
+    icon: mdi:air-conditioner
+
+  - name: "Passat GTE HVAC Mode"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/climatization/hvac_mode"
+    unique_id: passat_gte_hvac_mode
+    icon: mdi:hvac
+
+  - name: "Passat GTE HVAC Action"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/climatization/hvac_action"
+    unique_id: passat_gte_hvac_action
+    icon: mdi:hvac
+
+  - name: "Passat GTE Clim Sans Alim Externe"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/climatization/settings/climatization_without_external_power"
+    unique_id: passat_gte_climate_without_power
+    icon: mdi:air-conditioner
+
+  - name: "Passat GTE Température Cible"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/climatization/settings/target_temperature"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    unique_id: passat_gte_target_temp
+    icon: mdi:thermometer
+
+  # ============================================================================
+  # CHAUFFAGE VITRES
+  # ============================================================================
+  - name: "Passat GTE Chauffage Vitres"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/window_heating/heating_state"
+    unique_id: passat_gte_window_heating
+    icon: mdi:car-defrost-front
+
+  - name: "Passat GTE Chauffage Pare-brise"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/window_heating/front/heating_state"
+    unique_id: passat_gte_window_heating_front
+    icon: mdi:car-defrost-front
+
+  - name: "Passat GTE Chauffage Lunette"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/window_heating/rear/heating_state"
+    unique_id: passat_gte_window_heating_rear
+    icon: mdi:car-defrost-rear
+
+  # ============================================================================
+  # ÉCLAIRAGE
+  # ============================================================================
+  - name: "Passat GTE Feux"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/lights/light_state"
+    unique_id: passat_gte_lights
+    icon: mdi:car-light-high
+
+  - name: "Passat GTE Feu Gauche"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/lights/left/light_state"
+    unique_id: passat_gte_light_left
+    icon: mdi:car-light-high
+
+  - name: "Passat GTE Feu Droit"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/lights/right/light_state"
+    unique_id: passat_gte_light_right
+    icon: mdi:car-light-high
+
+  # ============================================================================
+  # POSITION GPS
+  # ============================================================================
+  - name: "Passat GTE Latitude"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/position/latitude"
+    unique_id: passat_gte_latitude
+    icon: mdi:crosshairs-gps
+
+  - name: "Passat GTE Longitude"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/position/longitude"
+    unique_id: passat_gte_longitude
+    icon: mdi:crosshairs-gps
+
+  - name: "Passat GTE Type Position"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/position/position_type"
+    unique_id: passat_gte_position_type
+    icon: mdi:map-marker
+
+  # ============================================================================
+  # MAINTENANCE
+  # ============================================================================
+  - name: "Passat GTE Prochaine Révision"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/maintenance/inspection_due_at"
+    unique_id: passat_gte_inspection_date
+    icon: mdi:wrench-clock
+
+  - name: "Passat GTE Km Avant Révision"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/maintenance/inspection_due_after"
+    unit_of_measurement: "km"
+    unique_id: passat_gte_inspection_km
+    icon: mdi:wrench
+
+  - name: "Passat GTE Prochaine Vidange"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/maintenance/oil_service_due_at"
+    unique_id: passat_gte_oil_date
+    icon: mdi:oil
+
+  - name: "Passat GTE Km Avant Vidange"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/maintenance/oil_service_due_after"
+    unit_of_measurement: "km"
+    unique_id: passat_gte_oil_km
+    icon: mdi:oil
+
+  # ============================================================================
+  # CONNECTEUR - Infos système
+  # ============================================================================
+  - name: "Passat GTE Dernière MAJ"
+    state_topic: "carconnectivity/connectors/volkswagen/last_update"
+    unique_id: passat_gte_last_update
+    icon: mdi:update
+
+  - name: "Passat GTE Intervalle"
+    state_topic: "carconnectivity/connectors/volkswagen/interval"
+    unique_id: passat_gte_interval
+    icon: mdi:timer
+
+# ==============================================================================
+# BINARY SENSORS
+# ==============================================================================
+binary_sensor:
+  - name: "Passat GTE Branché"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/charging/connector/connection_state"
+    payload_on: "connected"
+    payload_off: "disconnected"
+    device_class: plug
+    unique_id: passat_gte_plugged_in
+
+  - name: "Passat GTE En Charge"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/charging/binarystate"
+    payload_on: "on"
+    payload_off: "off"
+    device_class: battery_charging
+    unique_id: passat_gte_charging
+
+  - name: "Passat GTE Climatisation Active"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/climatization/binarystate"
+    payload_on: "on"
+    payload_off: "off"
+    unique_id: passat_gte_climate_active
+    icon: mdi:air-conditioner
+
+  - name: "Passat GTE Connecteur Verrouillé"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/charging/connector/lock_state"
+    payload_on: "locked"
+    payload_off: "unlocked"
+    device_class: lock
+    unique_id: passat_gte_connector_locked
+
+  - name: "Passat GTE Chauffage Vitres Actif"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/window_heating/heating_state"
+    payload_on: "on"
+    payload_off: "off"
+    unique_id: passat_gte_window_heating_active
+    icon: mdi:car-defrost-front
+
+  - name: "Passat GTE Connecteur VW OK"
+    state_topic: "carconnectivity/connectors/volkswagen/healthy"
+    payload_on: "True"
+    payload_off: "False"
+    device_class: connectivity
+    unique_id: passat_gte_vw_healthy
+
+# ==============================================================================
+# DEVICE TRACKER (pour la carte)
+# ==============================================================================
+device_tracker:
+  - name: "Passat GTE"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/position/position_type"
+    json_attributes_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/position/attributes"
+    unique_id: passat_gte_tracker
+    icon: mdi:car
+
+# ==============================================================================
+# BUTTONS (Commandes)
+# ==============================================================================
+button:
+  # Rafraîchir les données
+  - name: "Passat GTE Rafraîchir"
+    command_topic: "carconnectivity/commands/update_writetopic"
+    payload_press: "update"
+    unique_id: passat_gte_refresh
+    icon: mdi:refresh
+
+  # Klaxon et flash
+  - name: "Passat GTE Flash"
+    command_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/commands/honk-flash_writetopic"
+    payload_press: "flash"
+    unique_id: passat_gte_flash
+    icon: mdi:car-light-alert
+
+  - name: "Passat GTE Klaxon"
+    command_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/commands/honk-flash_writetopic"
+    payload_press: "honk"
+    unique_id: passat_gte_honk
+    icon: mdi:bullhorn
+
+  - name: "Passat GTE Klaxon + Flash"
+    command_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/commands/honk-flash_writetopic"
+    payload_press: "honkandflash"
+    unique_id: passat_gte_honk_flash
+    icon: mdi:car-light-alert
+
+  # Réveil
+  - name: "Passat GTE Réveil"
+    command_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/commands/wake-sleep_writetopic"
+    payload_press: "wake"
+    unique_id: passat_gte_wake
+    icon: mdi:car-connected
+
+# ==============================================================================
+# SWITCHES (Commandes ON/OFF) - Sans optimistic pour refléter l'état réel
+# ==============================================================================
+switch:
+  # Charge
+  - name: "Passat GTE Charge"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/charging/binarystate"
+    command_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/charging/commands/start-stop_writetopic"
+    payload_on: "start"
+    payload_off: "stop"
+    state_on: "on"
+    state_off: "off"
+    unique_id: passat_gte_charge_switch
+    icon: mdi:ev-station
+
+  # Climatisation
+  - name: "Passat GTE Climatisation"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/climatization/binarystate"
+    command_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/climatization/commands/start-stop_writetopic"
+    payload_on: "start"
+    payload_off: "stop"
+    state_on: "on"
+    state_off: "off"
+    unique_id: passat_gte_climate_switch
+    icon: mdi:air-conditioner
+
+  # Chauffage vitres
+  - name: "Passat GTE Chauffage Vitres"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/window_heating/heating_state"
+    command_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/window_heating/commands/start-stop_writetopic"
+    payload_on: "start"
+    payload_off: "stop"
+    state_on: "on"
+    state_off: "off"
+    unique_id: passat_gte_window_heating_switch
+    icon: mdi:car-defrost-front
+
+# ==============================================================================
+# NUMBER (Réglages numériques)
+# ==============================================================================
+number:
+  # Courant de charge max (en Ampères)
+  - name: "Passat GTE Réglage Courant Max"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/charging/settings/maximum_current"
+    command_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/charging/settings/maximum_current_writetopic"
+    min: 5
+    max: 16
+    step: 1
+    unit_of_measurement: "A"
+    unique_id: passat_gte_max_current_setting
+    icon: mdi:current-ac
+
+  # Température cible climatisation
+  - name: "Passat GTE Réglage Température"
+    state_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/climatization/settings/target_temperature"
+    command_topic: "carconnectivity/garage/VIN_OF_YOUR_CAR/climatization/settings/target_temperature_writetopic"
+    min: 16
+    max: 30
+    step: 0.5
+    unit_of_measurement: "°C"
+    unique_id: passat_gte_target_temp_setting
+    icon: mdi:thermometer
